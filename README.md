@@ -20,35 +20,6 @@ Version Control: Git
 Package Manager: npm 
 
 
-Project Structure
-The project follows a standard Next.js structure with additional directories for components, utilities, and styles.
-photobooth-website/
-├── components/               # Reusable React components
-│   ├── Camera.js             # Component for camera feed and capture
-│   ├── FilterControls.js     # Component for selecting image filters
-│   ├── PhotoGallery.js       # Component for displaying captured photos
-│   └── ShareButton.js        # Component for sharing photos
-├── pages/                    # Next.js pages (routes)
-│   ├── index.js              # Homepage with photobooth interface
-│   ├── _app.js               # Custom App component for global styles
-│   ├── _document.js          # Custom Document for HTML structure
-│   └── api/                  # API routes (e.g., for image processing)
-├── public/                   # Static assets (images, favicon, etc.)
-│   ├── favicon.ico
-│   └── images/               # Static images (e.g., logo)
-├── styles/                   # Global and Tailwind CSS files
-│   ├── globals.css           # Global styles
-│   └── tailwind.css          # Tailwind configuration
-├── utils/                    # Utility functions
-│   ├── camera.js             # Camera-related helpers
-│   └── filters.js            # Image filter functions
-├── .gitignore                # Git ignore file
-├── next.config.js            # Next.js configuration
-├── package.json              # Project dependencies and scripts
-├── README.md                 # Project overview and setup instructions
-└── tailwind.config.js        # Tailwind CSS configuration
-
-
 Setup Instructions
 Prerequisites
 
