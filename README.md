@@ -1,6 +1,4 @@
 Photobooth Website Documentation
-Overview
-This document provides a guide for setting up, developing, and deploying a Next.js-based photobooth website. The website allows users to capture photos using their device's camera, apply filters, and download or share their images. It is designed to be responsive, user-friendly, and optimized for performance.
 
 Project Goals
 
