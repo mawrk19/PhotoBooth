@@ -3,7 +3,7 @@ import React from "react";
 
 export function DotBackgroundDemo() {
   return (
-    <div className="absolute inset-0 -z-10 bg-[black] dark:bg-black">
+    <div className="fixed inset-0 bg-[#16191f] dark:bg-black backdrop-blur-[6px]">
       <div
         className={cn(
           "absolute inset-0",

@@ -1,59 +1,126 @@
 'use client';
-import React, { useRef, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import { BackgroundGradient } from "@/components/ui/background-gradient";
 
-function Control() {
-  const webcamRef = useRef<Webcam>(null);
-  const [images, setImages] = useState<string[]>([]);
+interface ControlProps {
+  onCapture: (imageSrc: string) => void;
+  onFilterChange: (filter: string) => void;
+  webcamRef: React.RefObject<Webcam | null>;
+}
 
-  const handleClick = () => {
-    // Take the first photo
+function Control({ onCapture, onFilterChange, webcamRef }: ControlProps) {
+  const [selectedTimer, setSelectedTimer] = useState(0);
+  const [selectedFilter, setSelectedFilter] = useState('none');
+  const [countdown, setCountdown] = useState(0);
+  const [isCapturing, setIsCapturing] = useState(false);
+
+  const captureImage = useCallback(() => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
       if (imageSrc) {
-        setImages((prev) => [...prev, imageSrc]);
+        onCapture(imageSrc);
       }
     }
+  }, [webcamRef, onCapture]);
 
-    // Take another photo after 3 seconds
-    setTimeout(() => {
-      if (webcamRef.current) {
-        const imageSrc = webcamRef.current.getScreenshot();
-        if (imageSrc) {
-          setImages((prev) => [...prev, imageSrc]);
-        }
-      }
-    }, 3000); // 3000ms = 3 seconds
+  // Countdown effect
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (countdown > 0) {
+      timer = setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+    } else if (countdown === 0 && isCapturing) {
+      captureImage();
+      setIsCapturing(false);
+    }
+    return () => clearInterval(timer);
+  }, [countdown, isCapturing, captureImage]);
+
+  const handleClick = () => {
+    if (selectedTimer > 0) {
+      setCountdown(selectedTimer);
+      setIsCapturing(true);
+    } else {
+      captureImage();
+    }
+  };
+
+  const handleFilterChange = (filter: string) => {
+    setSelectedFilter(filter);
+    onFilterChange(filter);
+  };
+
+  const filters = {
+    none: '',
+    grayscale: 'grayscale',
+    sepia: 'sepia',
+    blur: 'blur-sm',
+    brightness: 'brightness-150',
   };
 
   return (
     <BackgroundGradient>
-    <div className="control w-[600px] h-auto bg-white dark:bg-gray-800 shadow-lg p-4 flex flex-col items-center justify-center gap-4 rounded-[1.5vw]">
-      <h1 className="text-xl font-semibold">Control</h1>
+      <div className="control w-full h-full bg-transparent dark:bg-transparent shadow-lg p-2 sm:p-3 flex flex-col items-center justify-center gap-2 sm:gap-3 rounded-[1.5vw]">
+        <h1 className="text-base sm:text-lg font-semibold">Control</h1>
+                
+        {/* Timer Selection */}
+        <div className="flex flex-wrap justify-center gap-1 sm:gap-2">
+          <button
+            className={`px-2 py-1 rounded text-xs ${selectedTimer === 0 ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            onClick={() => setSelectedTimer(0)}
+          >
+            No Timer
+          </button>
+          <button
+            className={`px-2 py-1 rounded text-xs ${selectedTimer === 3 ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            onClick={() => setSelectedTimer(3)}
+          >
+            3s
+          </button>
+          <button
+            className={`px-2 py-1 rounded text-xs ${selectedTimer === 5 ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            onClick={() => setSelectedTimer(5)}
+          >
+            5s
+          </button>
+          <button
+            className={`px-2 py-1 rounded text-xs ${selectedTimer === 10 ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+            onClick={() => setSelectedTimer(10)}
+          >
+            10s
+          </button>
+        </div>
 
-      {/* <Webcam
-        audio={false}
-        ref={webcamRef}
-        screenshotFormat="image/jpeg"
-        className="rounded-md"
-        width={400}
-        height={300}
-      /> */}
+        {/* Countdown Display */}
+        {countdown > 0 && (
+          <div className="text-2xl sm:text-3xl font-bold text-blue-500">
+            {countdown}
+          </div>
+        )}
 
-      <button
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200"
-        onClick={handleClick}
-      >
-        Take Picture
-      </button>
+        {/* Filter Selection */}
+        <div className="flex flex-wrap justify-center gap-1 sm:gap-2">
+          {Object.keys(filters).map((filter) => (
+            <button
+              key={filter}
+              className={`px-2 py-1 rounded text-xs ${selectedFilter === filter ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+              onClick={() => handleFilterChange(filter)}
+            >
+              {filter.charAt(0).toUpperCase() + filter.slice(1)}
+            </button>
+          ))}
+        </div>
 
-      <div className="grid grid-cols-2 gap-2 mt-4">
-        {images.map((img, idx) => (
-          <img key={idx} src={img} alt={`capture-${idx}`} className="rounded shadow-md w-40" />
-        ))}
+        <button
+          className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition duration-200 disabled:opacity-50 text-sm"
+          onClick={handleClick}
+          disabled={isCapturing}
+        >
+          {isCapturing ? 'Capturing...' : 'Take Picture'}
+        </button>
       </div>
-    </div>
     </BackgroundGradient>
   );
 }
