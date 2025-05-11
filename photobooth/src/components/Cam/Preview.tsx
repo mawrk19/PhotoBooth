@@ -7,9 +7,23 @@ interface PreviewProps {
 }
 
 type LayoutType = '4vertical' | '3vertical' | '6grid';
+type FilterType = 'none' | 'grayscale' | 'sepia' | 'blur' | 'brightness';
+
+interface ImageData {
+  imageSrc: string;
+  filter: FilterType;
+}
 
 function Preview({ images }: PreviewProps) {
   const [selectedLayout, setSelectedLayout] = useState<LayoutType>('4vertical');
+
+  const filters: Record<FilterType, string> = {
+    none: '',
+    grayscale: 'grayscale',
+    sepia: 'sepia',
+    blur: 'blur-sm',
+    brightness: 'brightness-150',
+  };
 
   const handlePrint = async () => {
     const element = document.getElementById('print-content');
@@ -53,6 +67,19 @@ function Preview({ images }: PreviewProps) {
     }
   };
 
+  const parseImageData = (image: string): ImageData => {
+    try {
+      const data = JSON.parse(image);
+      return {
+        imageSrc: data.imageSrc,
+        filter: data.filter || 'none'
+      };
+    } catch {
+      // Handle legacy format (just the image string)
+      return { imageSrc: image, filter: 'none' };
+    }
+  };
+
   return (
     <BackgroundGradient>
       <div className="preview w-full h-full bg-white/60 dark:bg-gray-800/60 backdrop-blur-[8px] shadow-lg p-4 sm:p-5 md:p-6 rounded-[1.5vw] flex flex-col">
@@ -90,15 +117,18 @@ function Preview({ images }: PreviewProps) {
 
         {/* Images Preview */}
         <div id="print-content" className={`${getLayoutClass()} p-2`}>
-          {images.slice(0, getMaxImages()).map((img, idx) => (
-            <div key={idx} className="aspect-square">
-              <img
-                src={img}
-                alt={`capture-${idx}`}
-                className="rounded shadow-md w-full h-full object-cover"
-              />
-            </div>
-          ))}
+          {images.slice(0, getMaxImages()).map((img, idx) => {
+            const imageData = parseImageData(img);
+            return (
+              <div key={idx} className="aspect-square">
+                <img
+                  src={imageData.imageSrc}
+                  alt={`capture-${idx}`}
+                  className={`rounded shadow-md w-full h-full object-cover transform scale-x-[-1] ${filters[imageData.filter]}`}
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
     </BackgroundGradient>

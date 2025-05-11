@@ -19,10 +19,13 @@ function Control({ onCapture, onFilterChange, webcamRef }: ControlProps) {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
       if (imageSrc) {
-        onCapture(imageSrc);
+        onCapture(JSON.stringify({
+          imageSrc,
+          filter: selectedFilter
+        }));
       }
     }
-  }, [webcamRef, onCapture]);
+  }, [webcamRef, onCapture, selectedFilter]);
 
   // Countdown effect
   useEffect(() => {

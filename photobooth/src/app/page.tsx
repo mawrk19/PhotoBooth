@@ -11,8 +11,8 @@ export default function Home() {
   const [selectedFilter, setSelectedFilter] = useState('none');
   const webcamRef = useRef<Webcam>(null);
 
-  const handleCapture = (imageSrc: string) => {
-    setImages((prev) => [...prev, imageSrc]);
+  const handleCapture = (imageData: string) => {
+    setImages((prev) => [...prev, imageData]);
   };
 
   return (
