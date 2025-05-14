@@ -1,4 +1,4 @@
-Photobooth Website Documentation
+Photobooth Website Documentation [Under dev]
 
 Project Goals
 
